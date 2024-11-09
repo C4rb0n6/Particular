@@ -244,8 +244,12 @@ def handle_collisions():
 
 @ti.kernel
 def compute_colors():
-    blue = ti.Vector([0.02, 0.46, 0.55])
-    red = ti.Vector([0.9, 0.1, 0.1])
+    blue = ti.Vector([0.0, 0.27, 0.71])
+    green = ti.Vector([0.0, 0.78, 0.47])
+    yellow = ti.Vector([1.0, 0.92, 0.0])
+    red = ti.Vector([1.0, 0.26, 0.0])
+
+    scaling_factor = 0.56e7
 
     for i in range(num_particles[None]):
         min_velocity[i] = min(min_velocity[i], velocities[i].norm())
@@ -253,10 +257,17 @@ def compute_colors():
 
         normalized_velocity = (velocities[i].norm() - min_velocity[i]) / (
                 max_velocity[i] - min_velocity[i])
+        scaled_velocity = min(normalized_velocity * scaling_factor, 1.0)
 
-        normalized_velocity *= 0.46e7
-
-        colors[i] = normalized_velocity * red + (1.0 - normalized_velocity) * blue
+        if scaled_velocity < 0.33:
+            t = scaled_velocity / 0.33
+            colors[i] = (1 - t) * blue + t * green
+        elif scaled_velocity < 0.66:
+            t = (scaled_velocity - 0.33) / 0.33
+            colors[i] = (1 - t) * green + t * yellow
+        else:
+            t = (scaled_velocity - 0.66) / 0.34
+            colors[i] = (1 - t) * yellow + t * red
 
 
 @ti.kernel
