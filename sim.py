@@ -1,8 +1,14 @@
 import taichi as ti
 import time
 import math
+import platform
 
-ti.init(arch=ti.vulkan, device_memory_GB=10)
+if platform.system() == 'Darwin':
+    ti.init(arch=ti.metal)
+elif ti.has_gpu():
+    ti.init(arch=ti.vulkan)
+else:
+    ti.init(arch=ti.cpu)
 
 screen_width = 1920
 screen_height = 1080
