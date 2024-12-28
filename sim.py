@@ -5,10 +5,8 @@ import platform
 
 if platform.system() == 'Darwin':
     ti.init(arch=ti.metal)
-elif ti.has_gpu():
-    ti.init(arch=ti.vulkan)
 else:
-    ti.init(arch=ti.cpu)
+    ti.init(arch=ti.vulkan)
 
 screen_width = 1920
 screen_height = 1080
